@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products — ShopWave</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; color: #1a1a2e; background: #f8fafc; }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; background: #fff; border-bottom: 1px solid #e2e8f0;
+    }
+    nav .logo { font-weight: 700; font-size: 1.25rem; color: #6366f1; }
+    nav ul { display: flex; gap: 1.5rem; list-style: none; }
+    nav a { text-decoration: none; color: #475569; font-weight: 500; }
+    .container { max-width: 1100px; margin: 3rem auto; padding: 0 2rem; }
+    h1 { margin-bottom: 2rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
+    .card {
+      background: #fff; border-radius: 12px; padding: 2rem; text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08); cursor: pointer;
+    }
+    .card span { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; }
+    footer { text-align: center; padding: 2rem; margin-top: 4rem; background: #1e293b; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">ShopWave</div>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+    </ul>
+  </nav>
+  <div class="container">
+    <h1>All Products</h1>
+    <div class="grid">
+      <div class="card" onclick="addToCart('T-Shirts')"><span>👕</span>T-Shirts</div>
+      <div class="card" onclick="addToCart('Jeans')"><span>👖</span>Jeans</div>
+      <div class="card" onclick="addToCart('Jackets')"><span>🧥</span>Jackets</div>
+      <div class="card" onclick="addToCart('Shoes')"><span>👟</span>Shoes</div>
+      <div class="card" onclick="addToCart('Bags')"><span>🎒</span>Bags</div>
+      <div class="card" onclick="addToCart('Accessories')"><span>🕶️</span>Accessories</div>
+    </div>
+  </div>
+  <footer><p>&copy; 2026 ShopWave</p></footer>
+  <script src="/tracker/tracker.js"></script>
+  <script>
+    function addToCart(name) {
+      alert(name + " added to cart!");
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,575 @@
+Since you're using Cursor, your goal should be to **build the assignment like a miniature version of Hotjar/Mixpanel**, not just satisfy the minimum requirements.
+
+## Final Architecture
+
+```txt
+analytics-app/
+
+├── backend/
+│   ├── src/
+│   │   ├── models/
+│   │   │   └── Event.js
+│   │   │
+│   │   ├── routes/
+│   │   │   ├── eventRoutes.js
+│   │   │   ├── sessionRoutes.js
+│   │   │   └── heatmapRoutes.js
+│   │   │
+│   │   ├── controllers/
+│   │   ├── config/
+│   │   ├── middleware/
+│   │   └── server.js
+│   │
+│   └── package.json
+│
+├── tracker/
+│   └── tracker.js
+│
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── SessionDetails.jsx
+│   │   │   └── Heatmap.jsx
+│   │   │
+│   │   ├── components/
+│   │   │   ├── SessionTable.jsx
+│   │   │   ├── EventTimeline.jsx
+│   │   │   ├── HeatmapCanvas.jsx
+│   │   │   └── Navbar.jsx
+│   │   │
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   │
+│   │   └── App.jsx
+│
+└── demo-site/
+    └── index.html
+```
+
+---
+
+# What You'll Build
+
+Three separate things:
+
+### 1. Tracking Script
+
+Acts like Google Analytics.
+
+Embedded inside any webpage.
+
+Tracks:
+
+```txt
+page_view
+click
+```
+
+and sends them to backend.
+
+---
+
+### 2. Analytics Backend
+
+Stores everything in MongoDB.
+
+Provides APIs for:
+
+```txt
+Save Event
+
+List Sessions
+
+Get Session Journey
+
+Get Heatmap Data
+```
+
+---
+
+### 3. Analytics Dashboard
+
+Admin dashboard.
+
+Displays:
+
+```txt
+Sessions
+User Journey
+Heatmap
+```
+
+---
+
+# Database Design
+
+Single collection.
+
+### Event Model
+
+```js
+{
+  _id
+
+  sessionId
+
+  eventType
+
+  pageUrl
+
+  timestamp
+
+  clickX
+
+  clickY
+
+  userAgent
+
+  viewportWidth
+
+  viewportHeight
+}
+```
+
+Store viewport size too.
+
+Looks more professional.
+
+---
+
+# Feature 1 — Session Tracking
+
+When page loads:
+
+```txt
+session_id = uuid
+```
+
+Store in:
+
+```js
+localStorage
+```
+
+Example:
+
+```txt
+7b4f82f1-a5e7-42f2-b3d1
+```
+
+Reuse for all future events.
+
+---
+
+# Feature 2 — Page View Tracking
+
+When page opens:
+
+```js
+trackPageView()
+```
+
+Payload:
+
+```json
+{
+  "sessionId": "...",
+  "eventType": "page_view",
+  "pageUrl": "/home",
+  "timestamp": "..."
+}
+```
+
+Send:
+
+```http
+POST /api/events
+```
+
+---
+
+# Feature 3 — Click Tracking
+
+Track every click.
+
+```js
+document.addEventListener("click")
+```
+
+Collect:
+
+```js
+event.clientX
+event.clientY
+```
+
+Payload:
+
+```json
+{
+  "sessionId":"...",
+  "eventType":"click",
+  "pageUrl":"/home",
+  "clickX":420,
+  "clickY":180
+}
+```
+
+---
+
+# Demo Website
+
+Build a fake ecommerce page.
+
+Example:
+
+```txt
+Navbar
+
+Hero Section
+
+Products
+
+Add To Cart Buttons
+
+Footer
+```
+
+Why?
+
+Because clicks become meaningful.
+
+Reviewer can test.
+
+---
+
+# Backend APIs
+
+---
+
+## API 1
+
+### Create Event
+
+```http
+POST /api/events
+```
+
+Stores event.
+
+---
+
+## API 2
+
+### Sessions Summary
+
+```http
+GET /api/sessions
+```
+
+Response:
+
+```json
+[
+  {
+    "sessionId":"123",
+    "eventCount":15,
+    "firstVisit":"...",
+    "lastVisit":"..."
+  }
+]
+```
+
+Use MongoDB aggregation.
+
+---
+
+## API 3
+
+### Session Journey
+
+```http
+GET /api/sessions/:id
+```
+
+Returns:
+
+```json
+[
+ page_view
+ click
+ click
+ page_view
+]
+```
+
+ordered by timestamp.
+
+---
+
+## API 4
+
+### Heatmap Data
+
+```http
+GET /api/heatmap?page=/home
+```
+
+Returns only clicks.
+
+---
+
+## API 5 (Bonus)
+
+### Unique Pages
+
+```http
+GET /api/pages
+```
+
+Response:
+
+```json
+[
+ "/home",
+ "/products",
+ "/pricing"
+]
+```
+
+Useful for heatmap dropdown.
+
+---
+
+# Dashboard Design
+
+Use a clean SaaS-style UI.
+
+```txt
+--------------------------------
+ Analytics Dashboard
+--------------------------------
+
+[ Sessions ] [ Heatmap ]
+```
+
+---
+
+# Page 1
+
+## Sessions Dashboard
+
+Show cards:
+
+```txt
+Total Sessions
+Total Events
+Total Clicks
+```
+
+Top section.
+
+Example:
+
+```txt
+┌─────────┐
+│ Sessions│
+│   45    │
+└─────────┘
+```
+
+---
+
+Below:
+
+```txt
+Session ID
+Events
+First Visit
+Last Visit
+```
+
+Table.
+
+---
+
+# Page 2
+
+## Session Details
+
+When user clicks a session.
+
+```txt
+/session/:id
+```
+
+Display:
+
+```txt
+Session Timeline
+```
+
+Example:
+
+```txt
+10:00 Page View
+
+10:01 Click
+
+10:04 Click
+
+10:05 Page View
+```
+
+Use a vertical timeline.
+
+Looks impressive.
+
+---
+
+# Page 3
+
+## Heatmap
+
+Top:
+
+```txt
+Select Page
+
+[ /home ▼ ]
+```
+
+Fetch clicks.
+
+Render:
+
+```txt
+Webpage Container
+
+•   ••
+
+    •
+        •
+```
+
+using absolute-positioned dots.
+
+---
+
+# Heatmap Implementation
+
+Container:
+
+```jsx
+position: relative
+```
+
+Dots:
+
+```jsx
+position: absolute
+left: x
+top: y
+```
+
+Size:
+
+```css
+width:10px;
+height:10px;
+border-radius:50%;
+```
+
+For extra polish:
+
+```css
+opacity:0.4;
+```
+
+Overlapping dots naturally create hotspots.
+
+---
+
+# UI Stack
+
+Use:
+
+```txt
+React
+Vite
+TailwindCSS
+Axios
+React Router
+```
+
+This is enough.
+
+---
+
+# Deployment Plan
+
+### Backend
+
+Deploy on:
+
+[Render](https://render.com?utm_source=chatgpt.com)
+
+---
+
+### Database
+
+Use:
+
+[MongoDB Atlas](https://www.mongodb.com/cloud/atlas?utm_source=chatgpt.com)
+
+---
+
+### Frontend
+
+Deploy on:
+
+[Vercel](https://vercel.com?utm_source=chatgpt.com)
+
+---
+
+# README Sections
+
+Include:
+
+```txt
+Project Overview
+
+Architecture
+
+Tech Stack
+
+Setup
+
+API Endpoints
+
+Deployment
+
+Assumptions
+
+Future Improvements
+```
+
+---
+
+# Future Improvements Section
+
+Add:
+
+```txt
+- Session Replay
+- Scroll Tracking
+- Rage Click Detection
+- Conversion Funnels
+- Device Analytics
+- Real-Time Dashboard
+```
+
+This is especially important because the company is called **CausalFunnel**. Mentioning funnels, session replay, and analytics concepts shows you understand the domain, not just the coding task.
+
+If I were doing this assignment for a Full Stack Engineer interview, I'd target **~8–10 hours of actual coding**, keep the design clean, deploy everything, add screenshots + a 2-minute demo video, and focus on making the session journey and heatmap feel like a real analytics product. That will stand out much more than adding lots of extra features.
