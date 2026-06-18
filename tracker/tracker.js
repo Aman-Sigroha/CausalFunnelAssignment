@@ -1,9 +1,18 @@
 (function () {
-  const API_URL =
-    window.ANALYTICS_API_URL ||
-    (window.location.port === "5000"
-      ? "/api/events"
-      : "http://localhost:5000/api/events");
+  function resolveApiUrl() {
+    if (window.ANALYTICS_API_URL) return window.ANALYTICS_API_URL;
+
+    const { hostname, port } = window.location;
+    const isLocalDev =
+      hostname === "localhost" &&
+      port !== "5000" &&
+      port !== "";
+
+    if (isLocalDev) return "http://localhost:5000/api/events";
+    return "/api/events";
+  }
+
+  const API_URL = resolveApiUrl();
   const SESSION_KEY = "analytics_session_id";
 
   function generateSessionId() {

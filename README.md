@@ -1,154 +1,72 @@
-# CausalFunnel User Analytics Application
+# CausalFunnel — User Analytics App
 
-**Author:** Aman Sigroha  
-**Assignment:** Full Stack Engineer — User Analytics Application
+**Author:** Aman Sigroha
 
-A full-stack user analytics platform inspired by Hotjar/Mixpanel. Tracks page views and clicks on a demo e-commerce site, stores events in MongoDB Atlas, and visualizes sessions and heatmaps in a React dashboard.
+Tracks page views and clicks on a demo e-commerce site, stores events in MongoDB, and displays sessions, user journeys, and heatmaps in a React dashboard.
 
-## Project Overview
+## Live Demo
 
-| Component | Description |
-|-----------|-------------|
-| **tracker/** | Lightweight JS snippet embedded on any webpage |
-| **backend/** | Node.js + Express API with MongoDB |
-| **frontend/** | React dashboard (sessions, journey timeline, heatmap) |
-| **demo-site/** | Fake e-commerce store (ShopWave) to generate test data |
-
-## Screenshots
-
-| Demo Store | Sessions Dashboard |
-|------------|-------------------|
-| ![Demo Site](docs/screenshots/demo-site.png) | ![Dashboard](docs/screenshots/dashboard-sessions.png) |
-
-| Session Journey | Click Heatmap |
-|-----------------|---------------|
-| ![Session Journey](docs/screenshots/session-journey.png) | ![Heatmap](docs/screenshots/heatmap.png) |
-
-## Architecture
-
-```
-Browser (demo-site + tracker.js)
-        │
-        ▼ POST /api/events
-   Express Backend ──► MongoDB Atlas
-        ▲
-        │ GET /api/sessions, /heatmap, /pages
-   React Dashboard
-```
+- **Dashboard:** https://causal-funnel-assignment-kappa.vercel.app/
+- **Demo Store:** https://causalfunnelassignment.onrender.com/demo-site/
+- **API:** https://causalfunnelassignment.onrender.com/api/health
 
 ## Tech Stack
 
-- **Tracker:** Vanilla JavaScript (localStorage session, fetch API)
-- **Backend:** Node.js, Express, Mongoose
-- **Database:** MongoDB Atlas
-- **Frontend:** React, Vite, TailwindCSS, Axios, React Router
+React · Vite · TailwindCSS · Node.js · Express · MongoDB Atlas
 
-## Setup
-
-### Prerequisites
-
-- Node.js 18+
-- MongoDB Atlas cluster (or local MongoDB)
-
-### 1. Backend
+## Local Setup
 
 ```bash
+# Backend (also serves demo site + tracker)
 cd backend
-cp .env.example .env
+cp .env.example .env   # add MONGODB_URI
 npm install
-npm run dev
-```
+npm run dev             # http://localhost:5000
 
-Server runs at `http://localhost:5000` and also serves:
-- Demo store → `http://localhost:5000/demo-site/`
-- Tracker script → `http://localhost:5000/tracker/tracker.js`
-
-**`.env` example (Atlas):**
-```
-PORT=5000
-MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/causalfunnel-analytics?appName=Cluster0
-```
-
-> **Tip:** If `mongodb+srv://` fails with DNS errors on Windows, use Atlas's **standard connection string** (non-SRV) with `ssl=true&authSource=admin`.
-
-### 2. Frontend Dashboard
-
-```bash
+# Frontend
 cd frontend
 cp .env.example .env
 npm install
-npm run dev
+npm run dev             # http://localhost:5173
 ```
 
-Dashboard runs at `http://localhost:5173`.
+Open `http://localhost:5000/demo-site/`, interact with the store, then refresh the dashboard.
 
-### 3. Generate test data
+## Project Structure
 
-1. Open **http://localhost:5000/demo-site/**
-2. Click buttons, navigate Home → Products → Pricing
-3. Open dashboard and click **Refresh**
+```
+tracker/      → client-side tracking script
+backend/      → Express API + MongoDB
+frontend/     → React analytics dashboard
+demo-site/    → ShopWave demo store
+```
 
-## Verification Checklist
-
-| Feature | Status | How to verify |
-|---------|--------|---------------|
-| Page view tracking | ✅ | Open demo site → dashboard shows new session |
-| Click tracking | ✅ | Click buttons → Total Clicks increases |
-| Session list | ✅ | Sessions table shows ID, event count, timestamps |
-| User journey | ✅ | Click a session → chronological timeline |
-| Heatmap | ✅ | Heatmap tab → select page → red click dots |
-| Demo site buttons | ✅ | Add to Cart / Shop Now show alerts |
-
-**Verified stats (local):** 2 sessions · 39 events · 24 clicks
-
-## API Endpoints
+## API
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/api/events` | Store a new event |
-| `GET` | `/api/sessions` | List sessions with event counts |
-| `GET` | `/api/sessions/stats` | Total sessions, events, clicks |
-| `GET` | `/api/sessions/:id` | Ordered events for a session |
-| `GET` | `/api/heatmap?page=/path` | Click coordinates for a page |
-| `GET` | `/api/pages` | Unique page URLs (heatmap dropdown) |
-| `GET` | `/api/health` | Health check |
-
-## Troubleshooting
-
-| Issue | Fix |
-|-------|-----|
-| `npm` blocked in PowerShell | Run `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` or use `npm.cmd run dev` |
-| MongoDB `ECONNREFUSED` | Start local MongoDB or use Atlas connection string |
-| Atlas `bad auth` | Reset DB user password; URL-encode special characters in password |
-| Atlas IP blocked | Atlas → Network Access → Add your IP or `0.0.0.0/0` |
-| Dashboard shows 0 | Use `http://localhost:5000/demo-site/` (not port 3000); click **Refresh** |
-| Tracker 404 | Backend must be running — it serves `/tracker/tracker.js` |
+| POST | `/api/events` | Store event |
+| GET | `/api/sessions` | List sessions |
+| GET | `/api/sessions/:id` | Session journey |
+| GET | `/api/heatmap?page=` | Click data for heatmap |
+| GET | `/api/pages` | Unique page URLs |
 
 ## Deployment
 
-See **[DEPLOY.md](DEPLOY.md)** for step-by-step Render + Vercel instructions.
+| Service | Platform | Env var |
+|---------|----------|---------|
+| Backend + demo | Render | `MONGODB_URI` |
+| Dashboard | Vercel | `VITE_API_URL=https://causalfunnelassignment.onrender.com/api` |
 
-| Service | Platform |
-|---------|----------|
-| Backend + Demo Site | [Render](https://render.com) |
-| Database | [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) |
-| Frontend Dashboard | [Vercel](https://vercel.com) |
+Atlas → Network Access → allow `0.0.0.0/0` for Render.
 
-Set `VITE_API_URL` on Vercel to your Render API URL (e.g. `https://causalfunnelassignment.onrender.com/api`). The demo site link is derived automatically from this.
+## Assumptions
 
-## Assumptions & Trade-offs
-
-- **Session ID** stored in `localStorage` (assignment allows cookie or localStorage)
-- **Single Event collection** — simple schema, aggregation for session summaries
-- **Heatmap** uses percentage-based positioning from stored viewport dimensions
-- **No authentication** — dashboard is open (appropriate for a demo/MVP)
-- **Backend serves demo site** — simplifies local dev (one server, no CORS issues)
+- Session ID in `localStorage`
+- Single MongoDB collection for all events
+- No auth on dashboard (demo/MVP)
+- Heatmap uses click coordinates + viewport size
 
 ## Future Improvements
 
-- Session replay (DOM recording)
-- Scroll depth tracking
-- Rage click detection
-- **Conversion funnels** (relevant to CausalFunnel's domain)
-- Device & browser analytics breakdown
-- Real-time dashboard with WebSockets
+Session replay · scroll tracking · rage clicks · conversion funnels · real-time dashboard
