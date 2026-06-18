@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { DEMO_SITE_URL } from "../config";
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleString();
@@ -15,8 +16,8 @@ export default function SessionTable({ sessions }) {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-12 text-center text-slate-500">
         No sessions yet. Open the demo site at{" "}
-        <a href="http://localhost:5000/demo-site/" className="text-indigo-600 underline" target="_blank" rel="noreferrer">
-          localhost:5000/demo-site
+        <a href={DEMO_SITE_URL} className="text-indigo-600 underline" target="_blank" rel="noreferrer">
+          demo store
         </a>{" "}
         and click around, then hit Refresh.
       </div>

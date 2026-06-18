@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { DEMO_SITE_URL } from "../config";
 
 export default function Navbar() {
   const linkClass = ({ isActive }) =>
@@ -25,7 +26,7 @@ export default function Navbar() {
             Heatmap
           </NavLink>
           <a
-            href="http://localhost:5000/demo-site/"
+            href={DEMO_SITE_URL}
             target="_blank"
             rel="noreferrer"
             className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"

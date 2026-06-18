@@ -126,13 +126,15 @@ Dashboard runs at `http://localhost:5173`.
 
 ## Deployment
 
+See **[DEPLOY.md](DEPLOY.md)** for step-by-step Render + Vercel instructions.
+
 | Service | Platform |
 |---------|----------|
-| Backend | [Render](https://render.com) |
+| Backend + Demo Site | [Render](https://render.com) |
 | Database | [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) |
-| Frontend | [Vercel](https://vercel.com) |
+| Frontend Dashboard | [Vercel](https://vercel.com) |
 
-Set `VITE_API_URL` to your deployed backend URL. Update demo site `ANALYTICS_API_URL` to match.
+Set `VITE_API_URL` on Vercel to your Render API URL (e.g. `https://causalfunnelassignment.onrender.com/api`). The demo site link is derived automatically from this.
 
 ## Assumptions & Trade-offs
 
