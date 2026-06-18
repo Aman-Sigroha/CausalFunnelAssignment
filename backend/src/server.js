@@ -15,6 +15,11 @@ const rootDir = path.join(__dirname, "../..");
 app.use(cors());
 app.use(express.json());
 
+app.use("/api", (req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
+
 app.use("/tracker", express.static(path.join(rootDir, "tracker")));
 app.use("/demo-site", express.static(path.join(rootDir, "demo-site")));
 
